@@ -23,6 +23,7 @@ class draughts:
         self.enemy = self.turn.lower()
         self.moves = []
         self.isref = False
+        self.ingame = True
 
     def print(self):
         print("\033c")
@@ -42,6 +43,8 @@ class draughts:
             print('White turn')
         else:
             print('Red turn')
+        print('ref: reference, undo: undo move')
+        print('i-f: move from i to f, where i, f correspond to reference numbers')
 
     def reference(self):
         print("\033c")
@@ -59,8 +62,10 @@ class draughts:
         print(colored(' ' * 24, 'white', 'on_blue'))
 
     def move(self, move):
-        if move == 'undo':
+        if move == 'undo' and self.moves:
             self.moves.pop()
+        elif move == 'quit':
+            self.ingame = False
         elif move == 'ref':
             self.isref = not self.isref
         else:
@@ -184,9 +189,12 @@ def main():
     #     move = line
     #     game.move(move)
     #     game.update()
-    while True:
+    while game.ingame:
         if game.isref:
             game.reference()
+            move = input('Enter move: ')
+            game.move(move)
+            game.update()
         else:
             game.print()
             move = input('Enter move: ')
