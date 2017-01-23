@@ -7,7 +7,8 @@ TODO:
 * Add win identification to checkers.
 * Add documentation for each game
 
-Instructions for minesweeper2.py and minesweeper3.py
+Instructions for minesweeper2.py and minesweeper3.py:
+
 '''
 python minesweeper2.py play
 '''
