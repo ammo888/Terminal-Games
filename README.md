@@ -12,9 +12,10 @@ Instructions for minesweeper2.py and minesweeper3.py:
 ```
 python minesweeper2.py play
 ```
-or
+to play, or
 ```
 python minesweeper3.py ai [level]
 ```
-level is number between 1 and 5, inclusive.
-AI will play game to best of ability.
+for AI to play game to the best of its ability.
+`[level]`is number between 1 and 5, inclusive.
+
