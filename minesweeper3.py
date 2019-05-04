@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3
 import sys
 import tty
 import termios
@@ -264,7 +265,7 @@ class Minesweeper(object):
                 if self.mines[i][j]:
                     if self.player[i][j] == 1:
                         self.endgame = True
-        if ((self.player == 2) == self.mines).all():
+        if ((self.player == 2) == self.mines).all() or ((self.player == 0) == self.mines).all():
             self.endgame = True
             self.win = True
 
@@ -283,7 +284,6 @@ class _GetchUnix(object):
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
-
 
 def getkey():
     '''Gets user keyboard input'''
@@ -306,7 +306,7 @@ def play():
     game = Minesweeper(level)
     game.show()
     initloc = False
-    moves = {27: 'esc', 119: 'u', 100: 'r', 115: 'd', 97: 'l', 13: 'press', 102: 'flag'}
+    moves = {27: 'esc', 119: 'u', 100: 'r', 115: 'd', 97: 'l', 13: 'press', 102: 'flag', 104: 'h'}
     while not game.endgame:
         move = ord(getkey())
         if move in moves:
@@ -317,15 +317,20 @@ def play():
                     game.clear()
                     game.seed()
                 initloc = True
+                start_time = time.time()
+            if moves[move] == 'h':
+                ai_help(game, False)
             game.move(moves[move])
             game.show()
             if initloc:
                 game.check()
+    elapsed = time.time() - start_time
     game.showall()
     if game.win:
         print('You\'ve identified all the bombs!')
     else:
         print('You died.')
+    print("Time elapsed: {0:.2f}".format(elapsed))
 
 
 def ai_move(g, m, fast):
@@ -365,9 +370,10 @@ def ai_analysis(g, i, j):
 
 def ai_logic(g, fast):
     '''AI logic'''
-    hasnum = filter(lambda x: g.player[x[0]][x[1]] == 1 and g.nums[x[0]][x[1]] in range(1, 9), g.tuples)
-    # Prioritizes top left corner to make the solving look more 'natural'
-    hasnum = sorted(hasnum, key=lambda x: sum(x))
+    hasnum = list(filter(lambda x: g.player[x[0]][x[1]] == 1 and g.nums[x[0]][x[1]] in range(1, 9), g.tuples))
+    # Work left to right, top to bottom
+    hasnum.sort(key=lambda x: x[0])
+    hasnum.sort(key=lambda x: x[1])
 
     for loc in hasnum:
         i, j = loc
@@ -411,26 +417,13 @@ def ai_logic(g, fast):
                             ai_cursor(g, toflag[0][0], toflag[0][1], fast)
                             ai_move(g, 'flag', fast)
 
-
-def ai(level):
-    '''AI'''
-    game = Minesweeper(level)
-    # Initial seeding and press
-    game.seed()
-    while not game.solveable():
-        game.clear()
-        game.seed()
-    game.move('press')
-    game.show()
-    time.sleep(1)
+def ai_help(game, fast):
     aiplaying = True
     while not game.endgame:
         if aiplaying:
             init = copy(game.player)
-            # Change second parameter to:
-            # True - skips to when AI is done
-            # False - shows all of AI's steps
-            ai_logic(game, False)   
+
+            ai_logic(game, fast)
             if (game.player == init).all():
                 # Show grid in case using FAST AI
                 game.show()
@@ -465,6 +458,23 @@ def ai(level):
         else:
             print('You died.')
 
+def ai(level):
+    '''AI'''
+    game = Minesweeper(level)
+    # Initial seeding and press
+    game.seed()
+    while not game.solveable():
+        game.clear()
+        game.seed()
+    game.move('press')
+    game.show()
+    time.sleep(1)
+    # Change second parameter to:
+    # True - skips to when AI is done
+    # False - shows all of AI's steps
+    ai_help(game, False)
+
+
 
 def ai_test(level):
     '''Finds average flags left'''
@@ -490,7 +500,3 @@ def main():
         ai(int(sys.argv[2]))
 
 main()
-# g = Minesweeper(5)
-# g.seed()
-# g.showall()
-# g.solveable()
