@@ -108,7 +108,7 @@ def getkey():
 def main():
     '''Main'''
     moves = {27: 'esc', 119: 'u', 100: 'r', 115: 'd', 97: 'l', 99: 'clear', 13: 'press', 112: 'play', 32: 'animate'}
-    g = conway(30, 30)
+    g = conway(40, 40)
     g.show()
     while not g.done:
         move = ord(getkey())

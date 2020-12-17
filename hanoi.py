@@ -1,4 +1,6 @@
 # USE PYTHON 3
+import time
+
 def state():
 	print('0:', hanoi[0])
 	print('1:', hanoi[1])
@@ -25,6 +27,8 @@ def solve(s,i,f,b):
 	if s == 0:
 		return
 	solve(s-1,i,b,f)
+	time.sleep(0.5)
+	print("\033c")
 	movelegal(i,f)
 	solve(s-1,b,f,i)
 
@@ -38,8 +42,8 @@ def game():
 
 	# Solve
 	if play == 0:
+		print("\033c")
 		state()
-		#solve(n)
 		solve(n,0,2,1)
 		print('Game completed in',2**n-1,'moves')
 	# Play

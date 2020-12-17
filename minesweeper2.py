@@ -168,7 +168,7 @@ class Minesweeper(object):
         # Print bottom border
         print(colored('  ' * (self.size[1] + 2), 'white', 'on_blue'))
         numflags = (self.player == 2).sum()
-        print 'Flags left:' + str(self.numbombs - numflags)
+        print 'Flags left: ' + str(self.numbombs - numflags)
 
     def showall(self):
         '''Prints out uncovered grid to console'''
@@ -211,7 +211,7 @@ class Minesweeper(object):
                 if self.mines[i][j]:
                     if self.player[i][j] == 1:
                         self.endgame = True
-        if ((self.player == 2) == self.mines).all():
+        if ((self.player == 2) == self.mines).all() or ((self.player == 0) == self.mines).all():
             self.endgame = True
             self.win = True
 
@@ -249,7 +249,7 @@ def play():
     game = Minesweeper(level)
     game.show()
     initloc = False
-    moves = {27: 'esc', 119: 'u', 100: 'r', 115: 'd', 97: 'l', 13: 'press', 102: 'flag'}
+    moves = {27: 'esc', 119: 'u', 100: 'r', 115: 'd', 97: 'l', 13: 'press', 102: 'flag', 104: 'h'}
     while not game.endgame:
         move = ord(getkey())
         if move in moves:
@@ -257,6 +257,8 @@ def play():
                 # Only seed once player has chosen start location
                 game.seed()
                 initloc = True
+            if moves[move] == 'h':
+                ai_help(game, False)
             game.move(moves[move])
             game.show()
             if initloc:
@@ -351,15 +353,7 @@ def ai_logic(g, fast):
                             ai_cursor(g, toflag[0][0], toflag[0][1], fast)
                             ai_move(g, 'flag', fast)
 
-
-def ai(level):
-    '''AI'''
-    game = Minesweeper(level)
-    # Initial seeding and press
-    game.seed()
-    game.move('press')
-    game.show()
-    time.sleep(1)
+def ai_help(game, fast):
     aiplaying = True
     while not game.endgame:
         if aiplaying:
@@ -367,7 +361,7 @@ def ai(level):
             # Change second parameter to:
             # True - skips to when AI is done
             # False - shows all of AI's steps
-            ai_logic(game, False)   
+            ai_logic(game, fast)
             if (game.player == init).all():
                 # Show grid in case using FAST AI
                 game.show()
@@ -402,6 +396,18 @@ def ai(level):
         else:
             print('You died.')
 
+def ai(level):
+    '''AI'''
+    game = Minesweeper(level)
+    # Initial seeding and press
+    game.seed()
+    game.move('press')
+    game.show()
+    time.sleep(1)
+    # Change second parameter to:
+    # True - skips to when AI is done
+    # False - shows all of AI's steps
+    ai_help(game, True)
 
 def ai_test(level):
     '''Finds average flags left'''
